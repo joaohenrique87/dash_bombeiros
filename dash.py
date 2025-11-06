@@ -3,15 +3,12 @@ import pandas as pd
 import sqlite3
 import altair as alt
 
-# --- Configuração da Página ---
-# Define o título da aba do navegador e o layout (wide = tela cheia)
+
 st.set_page_config(
     page_title="Dashboard",
     layout="wide"
 )
 
-# --- REQUISITO DE ESTILO: Cor Azul Claro nos Filtros ---
-# Injeta código CSS para estilizar os filtros multiselect
 st.markdown("""
 <style>
 /* Cor azul claro para as "pills" (opções selecionadas) do multiselect */
@@ -26,14 +23,11 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
-# --- Fim do CSS ---
 
-# --- Constantes de Configuração ---
-# Define o caminho para o banco de dados e o nome da tabela
-DB_FILE = "dados/database.db"
+DB_FILE = "dados/bombeiros.db"
 TABLE_NAME = "mortes"
 
-# Define os nomes das colunas que serão usadas
+
 COL_ANO_MOR = 'ano_mor'
 COL_CAUSA = 'causa'
 COL_CLASS = 'classificacao'
@@ -43,8 +37,7 @@ COL_SERVICO = 'servico'
 COL_TIPO_LOCAL = 'tipo_local'
 COL_NATU = 'natu'
 
-# --- Carregamento de Dados ---
-# @st.cache_data armazena o resultado da função em cache para performance
+
 @st.cache_data(ttl=600)
 def load_data_from_db():
     """
@@ -75,7 +68,7 @@ def load_data_from_db():
         return df
         
     except Exception as e:
-        # Mostra um erro amigável se o banco de dados não for encontrado
+        
         st.error(f"ERRO: Não foi possível ler a tabela '{TABLE_NAME}' do '{DB_FILE}'.")
         st.exception(e)
         return None
@@ -83,7 +76,7 @@ def load_data_from_db():
 # Executa a função de carregamento
 df_original = load_data_from_db()
 
-# Para a execução se os dados não foram carregados
+
 if df_original is None:
     st.error("Não foi possível carregar os dados. A aplicação será interrompida.")
     st.stop()
