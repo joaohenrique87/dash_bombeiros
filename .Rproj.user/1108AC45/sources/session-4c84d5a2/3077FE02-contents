@@ -1,0 +1,149 @@
+library(tidyverse)
+library(scales)
+install.packages("effectsize")
+library(effectsize)
+
+#### - Dataset: https://www.kaggle.com/datasets/mosapabdelghany/medical-insurance-cost-dataset - 
+###### DICIONARIO ###### 
+# idade =  age: Age of primary beneficiary (int)
+# 
+# sexo =  sex: Gender of beneficiary (male, female)
+# 
+# imc = bmi: Body Mass Index, a measure of body fat based on height and weight (float)
+# 
+# filhos = children: Number of children covered by health insurance (int)
+# 
+# fumante = smoker: Smoking status of the beneficiary (yes, no)
+# 
+# regiao = region: Residential region in the US (northeast, northwest, southeast, southwest)
+# 
+# conta = charges: Medical insurance cost billed to the beneficiary (float)
+
+
+
+dataset_kaggle <-"fema/firefighter-fatalities"
+dados <- "dados"
+if (!dir.exists(dados)) {
+  dir.create(dados)
+}
+download_bd <- sprintf("kaggle datasets download -d %s -p %s --unzip", dataset_kaggle, dados)
+system(download_bd)
+
+banco <- read_csv("dados/insurance.csv") %>% 
+  rename(
+    idade = "age",
+    sexo = "sex",
+    imc = "bmi",
+    filhos = "children",
+    fumante = "smoker",
+    regiao = "region",
+    conta = "charges"
+  )
+
+summary(banco)
+str(banco)
+any(is.na(banco))
+
+
+mean(banco$conta)
+median(banco$conta)
+sd(banco$conta)
+cv_conta <- (sd(banco$conta)/mean(banco$conta))*100
+print(cv_conta)
+
+mean(banco$idade)
+median(banco$idade)
+sd(banco$idade)
+cv_idade <- (sd(banco$idade)/mean(banco$idade))*100
+print(cv_idade)
+
+mean(banco$imc)
+median(banco$imc)
+sd(banco$imc)
+cv_imc <- (sd(banco$imc)/mean(banco$imc))*100
+print(cv_imc)
+
+
+#testes de normalidade
+teste_conta <- shapiro.test(banco$conta)
+print(teste_conta)
+
+teste_fumante <- tapply(banco$conta, banco$fumante, shapiro.test)
+print(teste_fumante)
+
+teste_imc <- shapiro.test(banco$imc)
+print(teste_imc)
+
+teste_idade <- shapiro.test(banco$idade)
+print(teste_idade)
+
+
+fumante_banco <- banco %>%
+  select(fumante,conta) %>% 
+  group_by(fumante) %>%
+  summarise(
+    custo_medio = mean(conta),
+    custo_mediano = median(conta),
+    qtd = n()
+  ) %>% mutate(proporcao = percent(qtd/sum(qtd)), fumante = case_when(
+    fumante == "yes" ~ "Sim",
+    fumante == "no" ~ "Não",
+    TRUE ~ fumante
+  ))
+
+teste_fumante <- wilcox.test(conta ~ fumante, data = banco)
+print("Resultado do Mann-Whitney para a Hipótese 1:")
+print(teste_fumante)
+
+rank_biserial(conta ~ fumante, data = banco)
+
+
+
+
+plot_fumante <- ggplot(banco, aes(x = fumante, y = conta, fill = fumante)) +
+  geom_boxplot(alpha = 0.7, show.legend = FALSE) +
+  labs(
+    title = "Comparação de Custos de Plano: Fumantes vs. Não Fumantes",
+    x = "Hábito de Fumar",
+    y = "Custos do Seguro (em $)"
+  ) +
+  theme_minimal() +
+  scale_y_continuous(labels = scales::dollar)+
+  scale_x_discrete(labels = c("no" = "Não", "yes" = "Sim"))
+
+plot_fumante
+
+
+teste_imc <- cor.test(banco$imc, banco$conta, method = "spearman")
+cat("--- Resultado do Teste de Mann-Whitney U (Hipótese: Conta vs. Fumante) ---\n\n")
+print(teste_imc)
+
+imc_plot <- ggplot(banco, aes(x = imc, y = conta)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", color = "red") +
+  labs(
+    title = "Relação entre IMC e Valor do Plano",
+    x = "IMC",
+    y = "Custos do Plano (em $)"
+  ) +
+  theme_minimal() +
+  scale_y_continuous(labels = scales::dollar)
+
+imc_plot
+
+
+teste_idade <- cor.test(banco$idade, banco$conta, method = "spearman")
+print("Resultado do Teste de Correlação para a Hipótese 3:")
+print(teste_idade)
+
+idade_plot <- ggplot(banco, aes(x = idade, y = conta)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", color = "green") +
+  labs(
+    title = "Relação entre Idade e Valor do Plano",
+    x = "Idade",
+    y = "Custo do Plano (em $)"
+  ) +
+  theme_minimal()
+
+idade_plot
