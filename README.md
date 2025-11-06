@@ -58,9 +58,7 @@ sudo apt install python3-pip
 
 Instale as bibliotecas Python necessárias para executar o dash.py:
 
-# Instala as bibliotecas para o dashboard
-# (Usar --break-system-packages apenas não funcione sem ele)
-pip install --break-system-packages streamlit pandas altair
+pip install -r requirements.txt --break-system-packages
 
 
 4. Executar o Dashboard
