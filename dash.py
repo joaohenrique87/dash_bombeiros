@@ -262,5 +262,5 @@ st.altair_chart(line_chart, use_container_width=True)
 st.divider() # Linha divisória
 
 # --- Tabela de Dados ---
-st.header("Explorar Dados Completos (Filtrados)")
+st.header("Explorar Dados Completos)")
 st.dataframe(df_filtrado)
