@@ -30,7 +30,7 @@ st.markdown("""
 
 # --- Constantes de Configuração ---
 # Define o caminho para o banco de dados e o nome da tabela
-DB_FILE = "dados/teste.db"
+DB_FILE = "dados/database.db"
 TABLE_NAME = "mortes"
 
 # Define os nomes das colunas que serão usadas
