@@ -48,7 +48,7 @@ Requer um ambiente R com as bibliotecas listadas acima instaladas.
 Requer credenciais Kaggle (kaggle.json) configuradas.
 
 
-3. Instalar as Bibliotecas Python (para o Dashboard)
+2. Instalar as Bibliotecas Python (para o Dashboard)
 
 Certifique-se de que tem o Python 3.8+ e o pip instalados no seu sistema.
 
@@ -61,7 +61,7 @@ Instale as bibliotecas Python necessárias para executar o dash.py:
 pip install -r requirements.txt --break-system-packages
 
 
-4. Executar o Dashboard
+3. Executar o Dashboard
 
 Na pasta principal do projeto (onde o dash.py está localizado), execute o seguinte comando no seu terminal:
 
