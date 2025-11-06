@@ -176,7 +176,7 @@ df_filtrado = df_original[
 st.title("Análise de Fatalidades de Bombeiros")
 
 # --- KPIs  ---
-st.header("Visão Geral (Filtrada)")
+st.header("Visão Geral")
 
 
 if not df_filtrado.empty:
